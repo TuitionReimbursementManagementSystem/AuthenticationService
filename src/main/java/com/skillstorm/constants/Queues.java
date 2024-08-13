@@ -2,10 +2,10 @@ package com.skillstorm.constants;
 
 public enum Queues {
 
-    // From User-Service:
+    // From AuthUser-Service:
     REGISTRATION_REQUEST("registration-request-queue"),
 
-    // To User-Service:
+    // To AuthUser-Service:
     REGISTRATION_RESPONSE("registration-response-queue");
 
     private final String queue;

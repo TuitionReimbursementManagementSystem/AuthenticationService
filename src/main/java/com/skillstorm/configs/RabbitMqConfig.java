@@ -51,13 +51,13 @@ public class RabbitMqConfig {
 
     // Create the queues:
 
-    // From User-Service:
+    // From AuthUser-Service:
     @Bean
     public Queue registrationRequestQueue() {
         return new Queue(Queues.REGISTRATION_REQUEST.toString());
     }
 
-    // To User-Service:
+    // To AuthUser-Service:
     @Bean
     public Queue registrationResponseQueue() {
         return new Queue(Queues.REGISTRATION_RESPONSE.toString());
@@ -66,7 +66,7 @@ public class RabbitMqConfig {
 
     // Bind the queues to the exchange:
 
-    // From User-Service:
+    // From AuthUser-Service:
     @Bean
     public Binding registrationRequestBinding(Queue registrationRequestQueue, Exchange directExchange) {
         return BindingBuilder.bind(registrationRequestQueue)
@@ -75,7 +75,7 @@ public class RabbitMqConfig {
                 .noargs();
     }
 
-    // To User-Service:
+    // To AuthUser-Service:
     @Bean
     public Binding registrationResponseBinding(Queue registrationResponseQueue, Exchange directExchange) {
         return BindingBuilder.bind(registrationResponseQueue)

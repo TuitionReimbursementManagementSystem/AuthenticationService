@@ -13,7 +13,7 @@
     <artifactId>UserService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>AuthenticationService</name>
-    <description>Handles user authentication and authorization for Tuition Reimbursement Management System</description>
+    <description>Handles authUser authentication and authorization for Tuition Reimbursement Management System</description>
 
     <properties>
         <java.version>17</java.version>
