@@ -42,3 +42,8 @@ logging:
       netty: ERROR
     reactor:
       netty: ERROR
+
+# Configure JWTs:
+jwt:
+  secret: ThisIsSecretForJWTHS512SignatureAlgorithmThatMUSTHave64ByteLength
+  duration: 172800

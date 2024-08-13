@@ -1,5 +1,6 @@
 package com.skillstorm.configs;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,14 @@ import reactor.core.publisher.Mono;
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
-    private ReactiveAuthenticationManager authenticationManager;
-    private ServerSecurityContextRepository securityContextRepository;
+    private final ReactiveAuthenticationManager authenticationManager;
+    private final ServerSecurityContextRepository securityContextRepository;
+
+    @Autowired
+    public SecurityConfig(ReactiveAuthenticationManager authenticationManager, ServerSecurityContextRepository securityContextRepository) {
+        this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
+    }
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
