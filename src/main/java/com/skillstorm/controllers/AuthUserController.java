@@ -5,14 +5,12 @@ import com.skillstorm.dtos.CredentialsDto;
 import com.skillstorm.services.AuthUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/authorizations")
+@RequestMapping("/authentications")
 public class AuthUserController {
 
     private final AuthUserService authUserService;
@@ -22,8 +20,21 @@ public class AuthUserController {
         this.authUserService = authUserService;
     }
 
+    // Test Endpoint:
+    @GetMapping("/hello")
+    public Mono<String> hello() {
+        return Mono.just("Hello Authentication Service");
+    }
+
+    // Login:
     @PostMapping("/login")
     public Mono<AuthUserDto> login(@Valid @RequestBody CredentialsDto credentials) {
         return authUserService.login(credentials);
+    }
+
+    // Logout:
+    @DeleteMapping("/logout")
+    public Mono<Void> logout(@Header("username") String username) {
+        return authUserService.logout(username);
     }
 }
