@@ -11,8 +11,10 @@ import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -31,10 +33,13 @@ public class AuthUserServiceImpl implements AuthUserService, ReactiveUserDetails
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Find User by Username. Needed to load User into SecurityContext for Spring Security:
+    // Find User by Username. Needed to load User into SecurityContext for Spring Security.
+    // TODO: Casting shouldn't be necessary since AuthUser implements UserDetails, but it's not compiling without it:
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        return null;
+        return authUserRepository.findById(username)
+                .cast(UserDetails.class)
+                .switchIfEmpty(Mono.error(new UsernameNotFoundException("Username not found")));
     }
 
     // Users register with the User-Service, but username and password get sent here to store for authentication and authorization:
@@ -49,7 +54,7 @@ public class AuthUserServiceImpl implements AuthUserService, ReactiveUserDetails
 
         // Save the AuthUser and send back a response to indicate completion:
         return authUserRepository.save(newAuthUser)
-                .doOnNext(authUser ->
+                .doOnSuccess(authUser ->
                     rabbitTemplate.convertAndSend(replyToQueue, credentials, message -> {
                         message.getMessageProperties().setCorrelationId(correlationId);
                         return message;
@@ -60,6 +65,25 @@ public class AuthUserServiceImpl implements AuthUserService, ReactiveUserDetails
     // Login:
     @Override
     public Mono<AuthUserDto> login(CredentialsDto credentials) {
+        String username = credentials.getUsername();
+        String password = credentials.getPassword();
+
+        return findByUsername(username)
+                .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found")))
+                .flatMap(foundUser -> {
+                    // Check if the password matches
+                    if (passwordEncoder.matches(password, foundUser.getPassword())) {
+                        return Mono.just(new AuthUserDto((AuthUser) foundUser));
+                    } else {
+                        return Mono.error(new BadCredentialsException("Invalid username or password"));
+                    }
+                });
+    }
+
+
+    // Logout:
+    @Override
+    public Mono<Void> logout(String username) {
         return null;
     }
 }

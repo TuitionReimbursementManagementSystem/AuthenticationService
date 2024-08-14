@@ -23,7 +23,7 @@ public class AuthUserDto {
         this();
         this.username = user.getUsername();
         this.enabled = user.isEnabled();
-        this.roles = user.getRoles();
+        this.roles = new ArrayList<>(user.getRoles());
     }
 
     public AuthUser mapToEntity() {
@@ -31,7 +31,7 @@ public class AuthUserDto {
         user.setUsername(username);
         user.setPassword(password);
         user.setEnabled(enabled);
-        user.setRoles(roles);
+        user.setRoles(new ArrayList<>(roles));
 
         return user;
     }

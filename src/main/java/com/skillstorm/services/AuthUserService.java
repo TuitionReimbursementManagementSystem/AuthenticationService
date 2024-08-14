@@ -8,4 +8,7 @@ public interface AuthUserService {
 
    // Login:
     Mono<AuthUserDto> login(CredentialsDto credentials);
+
+    // Logout:
+    Mono<Void> logout(String username);
 }
