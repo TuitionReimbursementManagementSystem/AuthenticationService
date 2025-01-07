@@ -53,4 +53,8 @@ public class AuthUser implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return enabled;
     }
+
+    public List<String> getUserList() {
+        return new ArrayList<>();
+    }
 }

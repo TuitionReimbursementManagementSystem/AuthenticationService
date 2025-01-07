@@ -46,4 +46,4 @@ logging:
 # Configure JWTs:
 jwt:
   secret: ThisIsSecretForJWTHS512SignatureAlgorithmThatMUSTHave64ByteLength
-  duration: 172800
+  duration: 3600000

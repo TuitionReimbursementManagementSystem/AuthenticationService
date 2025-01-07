@@ -28,8 +28,8 @@ public class AuthUserController {
 
     // Login:
     @PostMapping("/login")
-    public Mono<AuthUserDto> login(@Valid @RequestBody CredentialsDto credentials) {
-        return authUserService.login(credentials);
+    public Mono<String> login(@Valid @RequestBody Mono<CredentialsDto> credentials) {
+        return credentials.flatMap(authUserService::login);
     }
 
     // Logout:
