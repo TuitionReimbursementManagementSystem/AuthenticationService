@@ -35,10 +35,16 @@ public class JwtAuthenticationFilter implements WebFilter {
 
         if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
             String token = bearerToken.substring(7);
-            return authUserService.getUsernameFromToken(token)
-                    .flatMap(username -> {
-                        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
-                        return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+            return authUserService.validateToken(token)
+                    .flatMap(isValid -> {
+                        if(!isValid) {
+                            return Mono.error(new InvalidJwtException("Invalid Jwt Exception", new IllegalArgumentException()));
+                        }
+                        return authUserService.getUsernameFromToken(token)
+                                .flatMap(username -> {
+                                    Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+                                    return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+                                });
                     })
                     .onErrorResume(e -> Mono.error(new InvalidJwtException(e.getMessage(), e.getCause())));
         }
