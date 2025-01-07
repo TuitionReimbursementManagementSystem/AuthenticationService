@@ -100,7 +100,7 @@ public class AuthUserServiceImpl implements AuthUserService, ReactiveUserDetails
     // JWT token generation, validation, and handling:
 
     // Generate a new JWT when a user logs in:
-    public Mono<String> generateToken(String username) {
+    private Mono<String> generateToken(String username) {
         return Mono.fromCallable(() -> Jwts.builder()
                         .setSubject(username)
                         .setIssuedAt(new Date())
