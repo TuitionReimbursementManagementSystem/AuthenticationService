@@ -46,6 +46,7 @@ public class AuthUserServiceImpl implements AuthUserService, ReactiveUserDetails
     }
 
     // Users register with the User-Service, but username and password get sent here to store for authentication and authorization:
+    // TODO: Change response so that we're not sending back the password:
     @RabbitListener(queues = "registration-request-queue")
     public Mono<Void> register(@Payload CredentialsDto credentials, @Header(AmqpHeaders.CORRELATION_ID) String correlationId, @Header(AmqpHeaders.REPLY_TO) String replyToQueue) {
 
@@ -58,7 +59,7 @@ public class AuthUserServiceImpl implements AuthUserService, ReactiveUserDetails
         // Save the AuthUser and send back a response to indicate completion:
         return authUserRepository.save(newAuthUser)
                 .doOnSuccess(authUser ->
-                    rabbitTemplate.convertAndSend(replyToQueue, credentials, message -> {
+                    rabbitTemplate.convertAndSend(replyToQueue, credentials.getUsername(), message -> {
                         message.getMessageProperties().setCorrelationId(correlationId);
                         return message;
                     })
